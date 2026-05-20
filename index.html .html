@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- 🔥 SEO TITLE -->
+    <title>Free Passport Size Photo Generator Online | A4 Sheet Photo Maker Tool (35x45 mm)</title>
+
+    <!-- 🚀 SEO META DESCRIPTION -->
+    <meta name="description" content="Create passport size photos instantly with our free online tool. Generate multiple copies on A4 sheet with custom sizes like 35x45 mm. Upload, edit, and download high-quality printable photos in seconds.">
+
+    <!-- 🎯 SEO KEYWORDS -->
+    <meta name="keywords" content="passport photo generator, passport size photo maker online, A4 photo sheet generator, 35x45 mm photo tool, ID photo maker, free photo generator tool">
+
+    <!-- 📱 Mobile Responsive -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 🔗 Author -->
+    <meta name="author" content="Studio Pro Tool">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body { background: #1a1a1a; color: #ccc; }
+        .sidebar { background: #252525; border-right: 1px solid #333; }
+        #canvas { background: white; cursor: crosshair; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        .control-group { margin-bottom: 20px; }
+        label { display: block; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; color: #888; }
+        input, select { background: #333; border: 1px solid #444; color: white; padding: 8px; width: 100%; border-radius: 4px; }
+    </style>
+</head>
+
+<body class="h-screen flex">
+
+    <!-- Sidebar -->
+    <aside class="sidebar w-80 p-6 flex flex-col gap-6">
+        <h2 class="text-white font-bold text-xl border-b border-gray-700 pb-2">
+            STUDIO PRO - Passport Photo Generator
+        </h2>
+        
+        <div class="control-group">
+            <label>Upload Image</label>
+            <input type="file" id="upload" class="file:bg-blue-600 file:border-0 file:text-white file:px-4 file:py-2 file:rounded">
+        </div>
+
+        <div class="control-group">
+            <label>Dimensions (mm)</label>
+            <div class="flex gap-2">
+                <input type="number" id="imgW" value="35">
+                <input type="number" id="imgH" value="45">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label>Number of Copies</label>
+            <input type="number" id="numCopies" value="8" min="1" max="100">
+        </div>
+
+        <div class="control-group flex items-center justify-between">
+            <label>Add Border</label>
+            <input type="checkbox" id="showBorder" checked class="w-5 h-5">
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <button onclick="renderSheet()" class="bg-blue-600 hover:bg-blue-700 text-white py-3 rounded font-bold">
+                GENERATE LAYOUT
+            </button>
+            <button onclick="window.print()" class="bg-gray-700 hover:bg-gray-600 text-white py-2 rounded">
+                PRINT A4
+            </button>
+            <button onclick="downloadImage()" class="bg-green-700 hover:bg-green-600 text-white py-2 rounded">
+                DOWNLOAD PNG
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Canvas -->
+    <main class="flex-1 p-10 overflow-auto flex justify-center items-start">
+        <canvas id="canvas"></canvas>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let img = new Image();
+
+        document.getElementById('upload').onchange = (e) => {
+            const reader = new FileReader();
+            reader.onload = (event) => { img.src = event.target.result; };
+            reader.readAsDataURL(e.target.files[0]);
+        };
+
+        function renderSheet() {
+            if(!img.src) return alert("Select an image first!");
+            
+            const dpi = 300;
+            canvas.width = 8.27 * dpi;
+            canvas.height = 11.69 * dpi;
+            
+            const w = (document.getElementById('imgW').value / 25.4) * dpi;
+            const h = (document.getElementById('imgH').value / 25.4) * dpi;
+            const copies = parseInt(document.getElementById('numCopies').value);
+            const border = document.getElementById('showBorder').checked;
+            const gap = 30;
+
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            let x = 100, y = 100;
+            for(let i = 0; i < copies; i++) {
+                if(x + w > canvas.width - 100) { x = 100; y += h + gap; }
+                
+                ctx.drawImage(img, x, y, w, h);
+                
+                if(border) {
+                    ctx.strokeStyle = "#000";
+                    ctx.lineWidth = 5;
+                    ctx.strokeRect(x, y, w, h);
+                }
+                x += w + gap;
+            }
+        }
+
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = 'passport-sheet.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+
+</body>
+</html>
